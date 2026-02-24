@@ -1,1 +1,284 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+
+  <title>Test MMC - Movimentazione manuale dei carichi</title>
+
+  <!-- Tailwind CDN (styling moderno, senza framework JS) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="./style.css" />
+  <script defer src="./app.js"></script>
+</head>
+
+<body class="min-h-dvh">
+  <a class="skip-link" href="#main">Salta al contenuto</a>
+
+  <!-- Header -->
+  <header class="px-4 pt-6 pb-4 md:pt-10">
+    <div class="mx-auto max-w-5xl">
+      <div class="glass rounded-2xl p-4 md:p-6">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm md:text-base text-slate-200/90">
+              👤 <span class="font-semibold">Dott. Salvatore Trono</span> - Esperto in SSL - Docente Formatore
+            </p>
+            <h1 class="mt-2 text-2xl md:text-3xl font-extrabold tracking-tight">
+              Test MMC - Movimentazione manuale dei carichi
+            </h1>
+            <p class="mt-2 text-sm md:text-base text-slate-200/85">
+              Simulazione didattica: 15 domande estratte casualmente, timer 20 minuti, report finale con suggerimenti normativi.
+            </p>
+          </div>
+
+          <div class="hidden md:flex items-center gap-2">
+            <span class="badge badge-accent" aria-label="Ambiente di simulazione">Simulazione</span>
+            <span class="badge badge-secondary" aria-label="Tempo massimo">20:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main id="main" class="px-4 pb-10">
+    <div class="mx-auto max-w-5xl">
+
+      <!-- Welcome Screen -->
+      <section id="screenWelcome" class="glass rounded-2xl p-4 md:p-6" aria-labelledby="welcomeTitle">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 id="welcomeTitle" class="text-xl md:text-2xl font-bold">Schermata iniziale</h2>
+            <p class="mt-2 text-sm md:text-base text-slate-200/85">
+              Leggi le istruzioni e avvia quando sei pronto. Prima dell’avvio comparirà un popup obbligatorio di accettazione.
+            </p>
+
+            <ul class="mt-4 space-y-2 text-sm md:text-base text-slate-200/85 list-disc pl-5">
+              <li><span class="font-semibold">Domande:</span> 15 estratte casualmente dal paniere</li>
+              <li><span class="font-semibold">Opzioni:</span> ordine A/B/C/D randomizzato ad ogni domanda</li>
+              <li><span class="font-semibold">Navigazione:</span> nessun tasto “indietro”, avanzamento automatico dopo la scelta</li>
+              <li><span class="font-semibold">Timer:</span> 20 minuti (alert quando restano meno di 5 minuti)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center">
+          <button id="btnStart" class="btn btn-primary w-full sm:w-auto" type="button">
+            Avvia il test
+          </button>
+          <button id="btnHomeFromWelcome" class="btn btn-ghost w-full sm:w-auto hidden" type="button">
+            Torna alla Home
+          </button>
+        </div>
+      </section>
+
+      <!-- Quiz Screen -->
+      <section id="screenQuiz" class="hidden mt-6 glass rounded-2xl p-4 md:p-6" aria-labelledby="quizTitle">
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+            <div>
+              <h2 id="quizTitle" class="text-xl md:text-2xl font-bold">Quiz in corso</h2>
+              <p class="mt-1 text-sm text-slate-200/80">
+                Rispondi selezionando un’opzione. L’avanzamento è automatico dopo la scelta.
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2 md:gap-3">
+              <div class="timer" aria-label="Timer quiz">
+                <span class="timer-label">⏱</span>
+                <span id="timerText" class="tabular-nums font-semibold">20:00</span>
+              </div>
+              <button id="btnHome" class="btn btn-ghost" type="button" aria-label="Torna alla Home">
+                Torna alla Home
+              </button>
+            </div>
+          </div>
+
+          <!-- Alert (ARIA live) -->
+          <div class="sr-only" aria-live="polite" aria-atomic="true" id="ariaLive"></div>
+          <div id="toast" class="hidden toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+          <!-- Progress -->
+          <div class="flex items-center justify-between text-sm text-slate-200/85 gap-3">
+            <div>
+              Domanda <span id="qIndex">1</span> / <span id="qTotal">15</span>
+              <span class="mx-2 text-slate-200/40">•</span>
+              <span id="qCategory" class="badge badge-secondary">categoria</span>
+            </div>
+            <div class="text-slate-200/70">
+              Avanzamento: <span id="progressPct" class="font-semibold">0%</span>
+            </div>
+          </div>
+          <div class="progress" aria-hidden="true">
+            <div id="progressBar" class="progress-bar" style="width:0%"></div>
+          </div>
+
+          <!-- Question Card -->
+          <article class="glass-inner rounded-2xl p-4 md:p-6" aria-labelledby="questionText">
+            <h3 id="questionText" class="text-lg md:text-xl font-bold leading-snug"></h3>
+            <div class="mt-4 grid gap-3" id="optionsWrap" role="radiogroup" aria-label="Opzioni di risposta"></div>
+
+            <div class="mt-4 text-sm text-slate-200/70">
+              Nota: se non selezioni un’opzione, non puoi proseguire.
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Results Screen -->
+      <section id="screenResults" class="hidden mt-6 glass rounded-2xl p-4 md:p-6" aria-labelledby="resultsTitle">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div>
+            <h2 id="resultsTitle" class="text-xl md:text-2xl font-bold">Risultato</h2>
+            <p class="mt-2 text-sm md:text-base text-slate-200/85">
+              Riepilogo con evidenza della tua risposta, risposta corretta (se errata) e suggerimento normativo.
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <button id="btnRestart" class="btn btn-primary" type="button">Ricomincia</button>
+            <button id="btnHome2" class="btn btn-ghost" type="button">Torna alla Home</button>
+          </div>
+        </div>
+
+        <div class="mt-5 grid gap-3 md:grid-cols-3">
+          <div class="glass-inner rounded-2xl p-4">
+            <div class="text-sm text-slate-200/70">Punteggio</div>
+            <div class="mt-1 text-2xl font-extrabold tabular-nums">
+              <span id="scorePct">0%</span>
+            </div>
+            <div class="mt-1 text-sm text-slate-200/80">
+              <span id="scoreRaw">0/15</span>
+            </div>
+          </div>
+
+          <div class="glass-inner rounded-2xl p-4">
+            <div class="text-sm text-slate-200/70">Esito</div>
+            <div id="gradeBadge" class="mt-2 grade-badge"></div>
+            <div id="gradeText" class="mt-2 text-sm text-slate-200/85"></div>
+          </div>
+
+          <div class="glass-inner rounded-2xl p-4">
+            <div class="text-sm text-slate-200/70">Tempo</div>
+            <div class="mt-1 text-2xl font-extrabold tabular-nums" id="timeUsed">—</div>
+            <div class="mt-2 text-sm text-slate-200/80">
+              Durata massima: 20:00
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <h3 class="text-lg font-bold">Riepilogo domande</h3>
+          <div id="reviewList" class="mt-3 grid gap-3"></div>
+        </div>
+      </section>
+
+      <!-- Footer: presentazione + disclaimer + credits -->
+      <footer class="mt-8">
+        <div class="glass rounded-2xl p-4 md:p-6">
+          <div class="grid gap-4 md:grid-cols-3">
+            <section aria-labelledby="footerPresentation">
+              <h3 id="footerPresentation" class="text-base font-bold">Presentazione</h3>
+              <p class="mt-2 text-sm text-slate-200/85">
+                👤 <span class="font-semibold">Dott. Salvatore Trono</span> - Esperto in SSL - Docente Formatore
+              </p>
+            </section>
+
+            <section aria-labelledby="footerDisclaimer">
+              <h3 id="footerDisclaimer" class="text-base font-bold">Disclaimer</h3>
+              <p class="mt-2 text-sm text-slate-200/85">
+                Questa pagina è realizzata esclusivamente a scopo didattico e di autovalutazione.
+                <span class="font-semibold">Non costituisce formazione</span> né sostituisce la formazione obbligatoria prevista dalla normativa vigente.
+                Per percorsi formativi validi è necessaria la specifica autorizzazione e l’erogazione secondo i requisiti applicabili.
+              </p>
+            </section>
+
+            <section aria-labelledby="footerCredits">
+              <h3 id="footerCredits" class="text-base font-bold">Credits</h3>
+              <p class="mt-2 text-sm text-slate-200/85">
+                <span class="font-semibold">Credits: Dott. Salvatore Trono</span><br />
+                Laureato in Servizi Giuridici per l'Impresa • Formatore • Esperto in Sicurezza sui Luoghi di Lavoro
+              </p>
+              <p class="mt-2 text-xs text-slate-200/60">
+                © <span id="year"></span> — Uso didattico. Tutti i diritti riservati.
+              </p>
+            </section>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </main>
+
+  <!-- Mandatory Popup (non-closable by overlay/ESC) -->
+  <div id="legalOverlay" class="hidden overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="legalTitle" aria-describedby="legalDesc" tabindex="-1">
+      <div class="modal-head">
+        <div class="modal-title-row">
+          <div class="modal-title" id="legalTitle">
+            <span aria-hidden="true">⚠️</span>
+            <span>ATTENZIONE</span>
+          </div>
+        </div>
+        <div class="modal-sep" aria-hidden="true"></div>
+      </div>
+
+      <div class="modal-body" id="legalDesc">
+        <div class="legal-box">
+          <div class="legal-box-title">
+            <span aria-hidden="true">⚖️</span>
+            <span class="font-extrabold">AVVISO LEGALE</span>
+          </div>
+
+          <div class="legal-sections">
+            <div class="legal-section">
+              <div class="legal-section-title">Riferimento normativo</div>
+              <div class="legal-section-text">
+                Il presente materiale è destinato a <span class="font-bold">uso didattico</span> e non equivale a formazione obbligatoria.
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-title">Sanzioni penali</div>
+              <div class="legal-section-text">
+                La riproduzione, diffusione o utilizzo non autorizzato possono integrare violazioni di legge e comportare responsabilità.
+              </div>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-title">Divieti</div>
+              <ul class="legal-list">
+                <li><span class="xmark" aria-hidden="true">✖</span> Vietata la condivisione del contenuto senza autorizzazione.</li>
+                <li><span class="xmark" aria-hidden="true">✖</span> Vietato l’uso per “attestare” formazione o addestramento.</li>
+                <li><span class="xmark" aria-hidden="true">✖</span> Vietato l’utilizzo su piattaforme o corsi non autorizzati.</li>
+              </ul>
+            </div>
+
+            <div class="legal-section">
+              <div class="legal-section-title">Autorizzazione richiesta</div>
+              <div class="legal-section-text">
+                L’accesso e l’uso sono consentiti <span class="font-bold">solo se autorizzati</span> dal Dott. Salvatore Trono.
+                Se non sei autorizzato, seleziona <span class="font-bold">ANNULLA</span>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ul class="mt-4 bullet text-slate-200/80">
+          <li>Seleziona <span class="font-semibold">ACCETTO</span> per proseguire al quiz.</li>
+          <li>Seleziona <span class="font-semibold">ANNULLA</span> per tornare alla schermata iniziale.</li>
+          <li>La chiusura tramite click esterno o tasto ESC è disabilitata.</li>
+        </ul>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btnCancel" class="btn btn-cancel" type="button">ANNULLA</button>
+        <button id="btnAccept" class="btn btn-accept" type="button">ACCETTO</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
 
