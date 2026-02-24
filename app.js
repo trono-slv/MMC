@@ -186,12 +186,7 @@ const QUESTION_BANK = [
     {"id":157,"category":"pratica","q":"Con quale periodicità aggiornare la formazione per la MMC?","a":{"A":"Ogni 2 anni","B":"Ogni 4 anni","C":"Ogni 1 anno","D":"Mai"},"correct":"B","exp":"Rinnovo obbligatorio."},
     {"id":158,"category":"pratica","q":"Cosa usare per sollevare un carico cilindrico?","a":{"A":"Impugnatura normale","B":"Cinghie o corda","C":"Pinze","D":"B+C"},"correct":"D","exp":"Blocco della rotazione."},
     {"id":159,"category":"pratica","q":"Cosa fare con un transpallet surriscaldato?","a":{"A":"Normale","B":"Fermare e raffreddare","C":"Continuare piano","D":"Aggiungere olio"},"correct":"B","exp":"Prevenzione guasti."},
-    {"id":160,"category":"pratica","q":"Cosa fare con il piano di evacuazione in caso di incendio?","a":{"A":"Opzionale","B":"Obbligatorio e visibile","C":"Solo negli uffici","D":"Verbale"},"correct":"B","exp":"DPR 1510/2011 visibile."}
-  ]
-}
-
-
-  
+    {"id":160,"category":"pratica","q":"Cosa fare con il piano di evacuazione in caso di incendio?","a":{"A":"Opzionale","B":"Obbligatorio e visibile","C":"Solo negli uffici","D":"Verbale"},"correct":"B","exp":"DPR 1510/2011 visibile."} 
 ];
 
 
